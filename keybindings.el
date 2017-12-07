@@ -6,7 +6,8 @@
 ;; (define-key global-map (kbd "<f2> b") (lambda () (interactive) (helm-find-1 "~/md/"))) ; wiskundeboeken
 
 (spacemacs/set-leader-keys
-  "os" 'nielius-grep-studie-files
+  ; "os" 'nielius-grep-studie-files ;; gebruikte ik niet echt
+  "os" 'create-link-to-desktop
   "od" 'nielius-grep-org-files
   "of" (lambda () (interactive) (helm-find-1 "~/doc/"))
   "op" (lambda () (interactive) (helm-find-1 "~/Dropbox/emacs/spacemacs/private/")) ; configure private layers

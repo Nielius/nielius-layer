@@ -265,3 +265,16 @@ to be exported to ~/Dropbox/org-export/"
   (let ((week-string (shell-command-to-string "echo -n W$(date +%V)")))
     (org-open-file "~/Dropbox/org/dagplanning.org" nil nil week-string)
     (delete-other-windows)))
+
+
+(defun create-link-to-desktop ()
+  (interactive)
+  (let*
+      ((src (buffer-file-name))
+       (month (format-time-string "%Y-%m"))
+       (tgt (concat "~/Desktop/" month "/" (file-name-nondirectory src))))
+    (if (not (file-exists-p tgt))
+        (progn
+          (make-symbolic-link src tgt)
+          (message (format "Link to %s made at %s" src tgt)))
+      (message (format "A link to %s already exists" tgt)))))
