@@ -266,13 +266,14 @@ to be exported to ~/Dropbox/org-export/"
     (org-open-file "~/Dropbox/org/dagplanning.org" nil nil week-string)
     (delete-other-windows)))
 
-
-(defun create-link-to-desktop ()
+(defun create-link-to-desktop (&optional file-to-link-to)
   (interactive)
   (let*
-      ((src (buffer-file-name))
+      ((src (if file-to-link-to
+                file-to-link-to
+              (buffer-file-name)))
        (month (format-time-string "%Y-%m"))
-       (tgt (concat "~/Desktop/" month "/" (file-name-nondirectory src))))
+       (tgt (concat "~/Desktop/maanden/" month "/" (file-name-nondirectory src))))
     (if (not (file-exists-p tgt))
         (progn
           (make-symbolic-link src tgt)
