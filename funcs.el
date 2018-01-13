@@ -145,7 +145,7 @@ Met prefix: gebruik find-grep."
       (org-open-at-point))))
 
 
-
+;; 
 ;; Keyboard macro om links die ik via chrome heb gekregen mooi te maken.
 ;; kun je uitvoeren met M-x of met call macro
 ;; ook misschien handig: apply-macro-to-region-lines to a key
@@ -209,25 +209,35 @@ Dan, but adapted by me (NudB)."
       (indent-according-to-mode)
       (forward-line 1))))
 
-
-(defun open-org-export-in-broswer ()
+;; 
+(defun open-the-exported-html ()
   "Open the HTML export of the current org-mode file in a
 browser. Assumes a very specific organisation: the org-mode files
-are supposed to be in ~/doc and this entire directory is supposed
-to be exported to ~/Dropbox/org-export/"
+are supposed to be in /home/niels/doc and this entire directory is supposed
+to be exported to /home/niels/proj/org-publish/"
   (interactive)
-  (let
-      ((directory-name (file-relative-name (file-name-directory (buffer-file-name)) "~/doc"))
-       (file-name (concat (file-name-base (buffer-file-name)) ".html")))
-    (browse-url-default-browser
-     (concat
-      "file://"
-      (expand-file-name "~/Dropbox/org-export/")
-      directory-name
-      file-name)
-     )))
+  (let*
+      ((org-dir "/home/niels/doc/")
+       (export-dir "/home/niels/proj/org-publish/"))
+    (if (and ;; just checking if the file is an org-file in our doc-directory
+         (string= (file-name-extension buffer-file-name) "org")
+         (string-prefix-p org-dir (file-name-directory buffer-file-name)))
+        (let*
+            ;; directory-name-in-org-dir is going to be the subdirectory in org-dir, e.g.,
+            ;; for the file '~/doc/comp/alexa.org' it is going to be 'comp/'
+            ((directory-name-in-org-dir (file-relative-name (file-name-directory buffer-file-name) org-dir))
+             (html-file-name-nondirectory (concat (file-name-base (buffer-file-name)) ".html"))
+             (html-file-name (concat export-dir directory-name-in-org-dir html-file-name-nondirectory)))
+          (browse-url-default-browser (concat "file://" (expand-file-name html-file-name))))
+      ;; If the file is not in the right directory...
+      (message "This file is not an org file in the standard org directory!"))))
+
+;; See this link:
+;; https://www.gnu.org/software/emacs/manual/html_node/elisp/File-Name-Components.html
+;; for a lot of useful file name operations.
 
 
+;; 
 ;; * Start-up screen
 ;; ** New frame met organiser
 (defun niels-open-organiser ()

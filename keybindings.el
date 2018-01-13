@@ -23,10 +23,26 @@
   ; "wn" 'make-frame ; dit is nu SPC w F
   )
 
-(spacemacs/set-leader-keys-for-major-mode 'org-mode
+(spacemacs/set-leader-keys-for-major-mode 'org-mode ; works only in org-mode, using SPC m or ,
   "io" 'helm-okular ; insert org link; eigenlijk deel van een andere layer?
   "iO" 'okular-dbus-insert-default-link ; komt ook van andere layer
+  "oh" 'open-the-exported-html
   "oq" 'org-latex-export-to-pdf-cd) ; q voor quick export
 
 
 (define-key evil-insert-state-map (kbd "M-p") 'yas-expand)
+
+
+;; Reftex-keybindings
+;; ~~~~~~~~~~~
+;; Also see https://www.gnu.org/software/emacs/manual/html_node/reftex/Key-Bindings.html
+;; I found the correct mode by running describe-keymap and searching.
+;; Also useful: helm-descbinds, describe-bindings.
+(eval-after-load 'reftex-toc
+  '(progn
+     (define-key reftex-toc-mode-map  "j" 'reftex-toc-next)
+     (define-key reftex-toc-mode-map "k" 'reftex-toc-previous)))
+
+;; Maar dit is eigenlijk niet helemaal wat ik wil.
+;; Ik wil gewoon in evil-mode zitten en een paar handige dingen van reftex.
+;; Misschien als inspiratie hoe dired werkt?
