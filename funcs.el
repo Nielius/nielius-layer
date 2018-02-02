@@ -283,7 +283,11 @@ to be exported to /home/niels/proj/org-publish/"
                 file-to-link-to
               (buffer-file-name)))
        (month (format-time-string "%Y-%m"))
-       (tgt (concat "~/Desktop/maanden/" month "/" (file-name-nondirectory src))))
+       (tgtdir (concat "~/Desktop/maanden/" month "/"))
+       (tgt (concat tgtdir (file-name-nondirectory src))))
+    ;; make the target dir (tgtdir) if it doesn't exist yet
+    (unless (file-exists-p tgtdir)
+      (make-directory tgtdir))
     (if (not (file-exists-p tgt))
         (progn
           (make-symbolic-link src tgt)
