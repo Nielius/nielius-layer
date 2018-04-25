@@ -237,6 +237,12 @@ to be exported to /home/niels/proj/org-publish/"
 ;; for a lot of useful file name operations.
 
 
+(defun open-this-file-in-browser ()
+  (interactive)
+  (browse-url (buffer-file-name)))
+
+
+
 ;; 
 ;; * Start-up screen
 ;; ** New frame met organiser
