@@ -176,22 +176,29 @@ Met prefix: gebruik find-grep."
 (defun listify-chrome-links (beg end)
   "Turn the selected region of links into a nice list of org-mode links."
   (interactive (list (region-beginning) (region-end)))
-  (if (= beg end) ; i.e., if no region is actually selected
+  (if (= beg end)
+      ;; if no region specified, just insert what is in the kill ring
       (listify-chrome-links--helper (split-string (current-kill 0) "\n+")) ; insert a listified version of what's in the kill ring
-    (let
-        ((links (delete-and-extract-region beg end)))
-      ;; just feed a list of (descr link descr link ...) into the helper
-      (listify-chrome-links--helper (split-string links "\n+"))
-      )))
+      ;; otherwise, convert the links in the region
+      (let
+          ((links (delete-and-extract-region beg end)))
+          ;; just feed a list of (descr link descr link ...) into the helper
+          (listify-chrome-links--helper (split-string links "\n+"))
+        )))
 
 (defun listify-chrome-links--helper (link-list)
+  "Turns a list of tuples (description, link) into strings"
   (let
       ((description (car link-list))
        (link (car (cdr link-list)))
        (rest (cdr (cdr link-list))))
     (if (and description link) ; i.e., if we're not at the end of a list
         (progn
-          (insert (format "- [[%s][%s]]\n" link description))
+          (if (derived-mode-p 'org-mode)
+              (insert (format "- [[%s][%s]]\n" link description))
+              ;; otherwise, assume markdown
+            (insert (format "- [%s](%s)]\n" description link))
+            )
           (listify-chrome-links--helper rest)))))
 
 (defun listify-at-newlines (arg beg end)
