@@ -197,7 +197,7 @@ Met prefix: gebruik find-grep."
           (if (derived-mode-p 'org-mode)
               (insert (format "- [[%s][%s]]\n" link description))
               ;; otherwise, assume markdown
-            (insert (format "- [%s](%s)]\n" description link))
+            (insert (format "- [%s](%s)\n" description link))
             )
           (listify-chrome-links--helper rest)))))
 
