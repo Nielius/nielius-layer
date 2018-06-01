@@ -33,6 +33,10 @@
 (define-key evil-insert-state-map (kbd "M-p") 'yas-expand)
 
 
+;; Keybindings for markdown mode
+(spacemacs/set-leader-keys-for-major-mode 'markdown-mode "v" 'open-this-file-in-browser)
+
+
 ;; Reftex-keybindings
 ;; ~~~~~~~~~~~
 ;; Also see https://www.gnu.org/software/emacs/manual/html_node/reftex/Key-Bindings.html
