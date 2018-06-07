@@ -246,7 +246,7 @@ to be exported to /home/niels/proj/org-publish/"
 
 (defun open-this-file-in-browser ()
   (interactive)
-  (browse-url (buffer-file-name)))
+  (browse-url-firefox (buffer-file-name) t)) ; the t is to open in new window
 
 
 
