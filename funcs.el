@@ -244,9 +244,11 @@ to be exported to /home/niels/proj/org-publish/"
 ;; for a lot of useful file name operations.
 
 
-(defun open-this-file-in-browser ()
+(defun open-this-file-in-browser (&optional new-window-q)
+  "Open the current file in firefox.
+With prefix argument, open new window."
   (interactive)
-  (browse-url-firefox (buffer-file-name) t)) ; the t is to open in new window
+  (browse-url-firefox (buffer-file-name) new-window-q)) ; the t is to open in new window
 
 
 
