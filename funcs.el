@@ -54,8 +54,7 @@ Met prefix: gebruik find-grep."
   (interactive "P")
   (if arg
       (call-interactively #'nielius-search-org-files)
-    (helm-do-grep-1
-     (directory-files-recursively "~/doc" ".*\\.org$"))))
+    (helm-do-grep-1 '("~/doc") t nil '("*.md"))))
 
 (defun nielius-open-org-files ()
   "Use helm to open one of the org files on the system. FIXME"
