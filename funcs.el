@@ -307,3 +307,15 @@ With prefix argument, open new window."
           (make-symbolic-link src tgt)
           (message (format "Link to %s made at %s" src tgt)))
       (message (format "A link to %s already exists" tgt)))))
+
+;; 
+;; Function to quickly open file at point
+
+(defun nielius-ffap ()
+  "My own \"find file at point\". Does not prompt to ask if the file was correct.
+
+One possible addition would be to use the prefix-key to enter the normal find-file-at-point."
+  (interactive)
+  (let
+      ((filename (ffap-file-at-point)))
+    (find-file filename)))

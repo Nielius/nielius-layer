@@ -7,6 +7,11 @@
 
 (require 'helm-find) ;; is this executed? otherwise, I need to put this in a defun that replaces the commands for of, op, ob (or use progn?)
 
+;; Override some general keybindings
+(define-key evil-normal-state-map (kbd "gf") 'nielius-ffap)
+
+
+;; Keybindings for finding files
 (spacemacs/set-leader-keys
   ; "os" 'nielius-grep-studie-files ;; gebruikte ik niet echt
   "os" 'create-link-to-desktop
