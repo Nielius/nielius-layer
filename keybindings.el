@@ -9,6 +9,16 @@
 
 ;; Override some general keybindings
 (define-key evil-normal-state-map (kbd "gf") 'nielius-ffap)
+(define-key evil-normal-state-map (kbd "<up>") 'm/scrollup)
+(define-key evil-normal-state-map (kbd "<up>") 'm/scrolldown)
+
+(define-key evil-normal-state-map (kbd "<mouse-2>") 'my-eval-curr-sexp)
+
+(spacemacs/set-leader-keys
+  "er" 'eval-region
+  "ec" 'nielius-eval-curr-sexp
+  "ee" 'eval-last-sexp ; more useful than I thought
+  )
 
 
 ;; Keybindings for finding files
@@ -26,6 +36,7 @@
   "ol" (lambda () (interactive) (ace-link)
          (spacemacs/toggle-maximize-buffer)) ; open link and immediately maximize
   ; "wn" 'make-frame ; dit is nu SPC w F
+  "oy" 'buffer-file-name-to-kill-ring
   )
 
 (spacemacs/set-leader-keys-for-major-mode 'org-mode ; works only in org-mode, using SPC m or ,

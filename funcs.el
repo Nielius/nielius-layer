@@ -11,6 +11,26 @@
 ;;   - met helm
 ;;   - niet interactief
 
+(defun m/scrolldown ()
+  (interactive)
+  (scroll-up 1))
+(defun m/scrollup ()
+  (interactive)
+  (scroll-down 1))
+
+(defun nielius-eval-curr-sexp ()
+  "Evaluate (as emacs lisp) the current sexp, where the sexp is
+determined by `sp-get-enclosing-sexp`."
+  (interactive)
+  (pcase-let
+      (( `(_ ,beg _ ,end) (sp-get-enclosing-sexp)))
+    (eval-region beg end)))
+
+(defun buffer-file-name-to-kill-ring ()
+  "Save the name of the current buffer to the kill ring."
+  (interactive)
+  (kill-new buffer-file-name))
+
 
 (defun nielius--get-org-files ()
   "Return a list of all org files on the system."
