@@ -11,6 +11,23 @@
 ;;   - met helm
 ;;   - niet interactief
 
+
+;;; Utility functions
+(defun insert-string-at-point (str pt)
+  "Insert the string STR at the point PT. PT is an integer that
+specifies the position; it is fed to `goto-char'."
+  (save-excursion
+    (goto-char pt)
+    (insert str)))
+
+(defun replace-region-in-buffer (beg end str)
+  "Replace the region between BEG and END in the current buffer with the string
+  STR."
+  (delete-region beg end)
+  (insert-string-at-point str beg))
+
+
+;;; General purpose functions
 (defun m/scrolldown ()
   (interactive)
   (scroll-up 1))
@@ -30,6 +47,14 @@ determined by `sp-get-enclosing-sexp`."
   "Save the name of the current buffer to the kill ring."
   (interactive)
   (kill-new buffer-file-name))
+
+;; relies on my small library
+(defun relativize-filename (beg end)
+  "Relativize the filename that is selected."
+  (interactive "r")
+  (let ((filename (buffer-substring-no-properties beg end)))
+    (replace-region-in-buffer beg end (file-relative-name filename (pwd)))))
+
 
 
 (defun nielius--get-org-files ()
