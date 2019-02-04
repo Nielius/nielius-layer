@@ -53,7 +53,8 @@ determined by `sp-get-enclosing-sexp`."
   "Relativize the filename that is selected."
   (interactive "r")
   (let ((filename (buffer-substring-no-properties beg end)))
-    (replace-region-in-buffer beg end (file-relative-name filename (pwd)))))
+    (replace-region-in-buffer beg end (file-relative-name filename (file-name-directory
+                                                                    (buffer-file-name))))))
 
 
 
