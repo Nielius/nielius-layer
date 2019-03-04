@@ -369,6 +369,8 @@ With prefix argument, open new window."
 ;; 
 ;; Function to quickly open file at point
 
+;; It requires ffap.el.
+(autoload 'ffap-file-at-point "ffap.el")
 (defun nielius-ffap ()
   "My own \"find file at point\". Does not prompt to ask if the file was correct.
 
