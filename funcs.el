@@ -56,7 +56,19 @@ determined by `sp-get-enclosing-sexp`."
     (replace-region-in-buffer beg end (file-relative-name filename (file-name-directory
                                                                     (buffer-file-name))))))
 
-
+(defun markdown-paste-as-relative-link ()
+  "Pastes the filename in the kill ring as a relative link.
+Useful in combination with `buffer-file-name-to-kill-ring'."
+  (interactive)
+  (let
+      ((killed-filename (substring-no-properties
+                         (car kill-ring))))
+    (insert
+     (concat
+      "[file]("
+      (file-relative-name killed-filename
+                          (file-name-directory (buffer-file-name)))
+      ")"))))
 
 (defun nielius--get-org-files ()
   "Return a list of all org files on the system."
