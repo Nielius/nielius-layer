@@ -53,7 +53,8 @@ determined by `sp-get-enclosing-sexp`."
   "Relativize the filename that is selected."
   (interactive "r")
   (let ((filename (buffer-substring-no-properties beg end)))
-    (replace-region-in-buffer beg end (file-relative-name filename (file-name-directory
+    (replace-region-in-buffer beg end
+                              (file-relative-name filename (file-name-directory
                                                                     (buffer-file-name))))))
 
 (defun markdown-paste-as-relative-link ()
@@ -65,9 +66,12 @@ Useful in combination with `buffer-file-name-to-kill-ring'."
                          (car kill-ring))))
     (insert
      (concat
-      "[file]("
-      (file-relative-name killed-filename
-                          (file-name-directory (buffer-file-name)))
+      "["
+      (file-name-base killed-filename)
+      "]("
+      (s-trim
+       (file-relative-name killed-filename
+                           (file-name-directory (buffer-file-name))))
       ")"))))
 
 (defun nielius--get-org-files ()
