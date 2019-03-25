@@ -74,6 +74,13 @@ Useful in combination with `buffer-file-name-to-kill-ring'."
                            (file-name-directory (buffer-file-name))))
       ")"))))
 
+(defun relativize-filename-at-point ()
+  "Relativize the filename at the point, using `thing-at-point' to get the filename at the point."
+  (interactive)
+  (let ((bounds (bounds-of-thing-at-point 'filename)))
+    (relativize-filename (car bounds) (cdr bounds))))
+
+
 (defun nielius--get-org-files ()
   "Return a list of all org files on the system."
   ;; misschien zou dit eigenlijk opgeslagen moeten worden? ipv steeds opnieuw

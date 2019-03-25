@@ -37,6 +37,8 @@
          (spacemacs/toggle-maximize-buffer)) ; open link and immediately maximize
   ; "wn" 'make-frame ; dit is nu SPC w F
   "oy" 'buffer-file-name-to-kill-ring
+  ;; Relativize the filename at point is useful in combination with buffer-file-name-to-kill-ring.
+  "or" 'relativize-filename-at-point
   )
 
 (spacemacs/set-leader-keys-for-major-mode 'org-mode ; works only in org-mode, using SPC m or ,
