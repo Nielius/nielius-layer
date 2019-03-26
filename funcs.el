@@ -57,20 +57,26 @@ determined by `sp-get-enclosing-sexp`."
                               (file-relative-name filename (file-name-directory
                                                                     (buffer-file-name))))))
 
-(defun markdown-paste-as-relative-link ()
+(defun markdown-paste-as-relative-link (&optional filename)
   "Pastes the filename in the kill ring as a relative link.
-Useful in combination with `buffer-file-name-to-kill-ring'."
+Useful in combination with `buffer-file-name-to-kill-ring'.
+
+If the optional argument FILENAME is given, then make a link to that file,
+instead of to the filename in the kill ring."
   (interactive)
   (let
-      ((killed-filename (substring-no-properties
-                         (car kill-ring))))
+      ((filename
+        (if filename ; if the optional argument is given,
+            filename ; use that
+          (substring-no-properties ; otherwise, kill ring
+           (car kill-ring)))))
     (insert
      (concat
       "["
-      (file-name-base killed-filename)
+      (file-name-base filename)
       "]("
       (s-trim
-       (file-relative-name killed-filename
+       (file-relative-name filename
                            (file-name-directory (buffer-file-name))))
       ")"))))
 
@@ -134,6 +140,20 @@ Met prefix: gebruik find-grep."
         :ff-transformer-show-only-basename nil
         :case-fold-search helm-file-name-case-fold-search)
   )
+
+
+(defun nielius-insert-relative-markdown-link (idunno)
+  idunno)
+
+(defun nielius-insert-doc-file-as-markdown-link ()
+  "Use helm to search for a doc file and insert a relative
+markdown link to that file."
+  (interactive)
+  (let
+      ((helm-type-file-actions (helm-make-actions "Insert file as link"  'my-helm-insert-as-markdown-link)))
+    (helm-find-1 "~/doc")))
+
+
 
 
 ;; * misc custom commands
@@ -390,3 +410,53 @@ One possible addition would be to use the prefix-key to enter the normal find-fi
   (let
       ((filename (ffap-file-at-point)))
     (find-file filename)))
+
+
+;; 
+;; Helm insert markdown links
+
+(defun nielius-helm--insert-markdown-links-action (&optional _ignore)
+  "Simple helm action that runs `markdown-paste-as-relative-link' on marked candidates.
+Code inspired by `helm-find-many-files'."
+  (interactive)
+  (let ((helm--reading-passwd-or-string t) ; don't know why; took this from helm-find-many-files
+        (candidates (helm-marked-candidates)))
+    (if (> (length candidates) 1)
+        ;; If we get more than 1 candidate, insert links to all candidates as a markdown list.
+        (loop for cand in candidates
+              do
+              (progn
+                (insert "- ")
+                (markdown-paste-as-relative-link cand)
+                (insert "\n")))
+      (mapc 'markdown-paste-as-relative-link (helm-marked-candidates)))))
+
+
+(defun nielius-helm--insert-markdown-links-windows ()
+  "Code inspired by `spacemacs/helm-find-buffers-windows'. I
+think it should just do nothing and execute `nielius-helm--insert-markdown-links-action'
+on all marked helm candidates (i.e., in the lambda, `candidate' is simply ignored)."
+  (interactive)
+  (helm-exit-and-execute-action
+   (lambda (candidate)
+     (nielius-helm--insert-markdown-links-action ))))
+
+
+(defun nielius-helm-insert-markdown-links-from-doc ()
+  "Search for files in my document folder with helm and insert
+them as markdown links."
+  (interactive)
+  (let
+      ((helm-type-file-actions
+        '(("Make relative markdown link to file" . nielius-helm--insert-markdown-links-action)))
+       ;; (helm-find-map my-helm-find-map)
+       ;; (spacemacs/helm-find-files-windows 'nielius-helm--insert-markdown-links-action)
+       )
+    (cl-letf (((symbol-function 'spacemacs/helm-find-files-windows) #'nielius-helm--insert-markdown-links-windows))
+      (helm-find-1 "~/doc"))))
+
+
+;; Add the action to helm's list, so that I can use it with any helm find file.
+(setf
+ (alist-get "Insert as markdown link" helm-type-file-actions)
+ 'nielius-helm--insert-markdown-links-action)
