@@ -142,8 +142,6 @@ Met prefix: gebruik find-grep."
   )
 
 
-(defun nielius-insert-relative-markdown-link (idunno)
-  idunno)
 
 (defun nielius-insert-doc-file-as-markdown-link ()
   "Use helm to search for a doc file and insert a relative
