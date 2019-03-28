@@ -455,6 +455,8 @@ them as markdown links."
 
 
 ;; Add the action to helm's list, so that I can use it with any helm find file.
-(setf
- (alist-get "Insert as markdown link" helm-type-file-actions)
- 'nielius-helm--insert-markdown-links-action)
+;; TODO: fix this; this be evaluated after helm is loaded, for example;
+;; otherwise my entire config is not loaded
+;; (setf
+;;  (alist-get "Insert as markdown link" helm-type-file-actions)
+;;  'nielius-helm--insert-markdown-links-action)
