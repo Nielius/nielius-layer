@@ -70,7 +70,8 @@ instead of to the filename in the kill ring."
             filename ; use that
           (substring-no-properties ; otherwise, kill ring
            (car kill-ring)))))
-    (insert
+    (unless (eolp) (forward-char)) ; necessary to get evil's normal paste-after effect
+    (insert-for-yank
      (concat
       "["
       (file-name-base filename)
