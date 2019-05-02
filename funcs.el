@@ -461,3 +461,14 @@ them as markdown links."
 ;; (setf
 ;;  (alist-get "Insert as markdown link" helm-type-file-actions)
 ;;  'nielius-helm--insert-markdown-links-action)
+
+
+
+;; 
+
+(defun evil-my-paste-at-mark (char)
+  "Paste from the kill ring at the given mark."
+  (interactive (list (read-char)))
+  (save-excursion
+    (evil-goto-mark char)
+    (yank)))

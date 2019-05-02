@@ -56,6 +56,10 @@
 (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "p" 'markdown-paste-as-relative-link)
 
 
+;; Global keybindings
+(evil-global-set-key 'normal (kbd "~") 'evil-my-paste-at-mark)
+
+
 ;; Reftex-keybindings
 ;; ~~~~~~~~~~~
 ;; Also see https://www.gnu.org/software/emacs/manual/html_node/reftex/Key-Bindings.html
