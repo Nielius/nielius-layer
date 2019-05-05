@@ -32,14 +32,16 @@
   "ob" (lambda () (interactive) (helm-find-1 "~/md/"))
   "oB" (lambda () (interactive) (helm-find-1 "~/library/"))
   "oh" 'niels-go-home-and-open
-  "oe" 'open-org-export-in-broswer ; eigenlijk hoeft dit natuurlijk alleen in org-files
+  "oe" 'nielius-sh-execute-region-or-line ; send current line or region to inferior shell; 'e' for execute; compare to the global "SPC e e" for evaluation sexps anywhere; see also nielius-xargs-on-region
   "oH" (lambda () (interactive) (find-file "~/doc/org/home.org"))
   "ol" (lambda () (interactive) (ace-link)
          (spacemacs/toggle-maximize-buffer)) ; open link and immediately maximize
   ; "wn" 'make-frame ; dit is nu SPC w F
+  "oo" 'nielius-xargs-xdg-open-smart
   "oy" 'buffer-file-name-to-kill-ring
   ;; Relativize the filename at point is useful in combination with buffer-file-name-to-kill-ring.
   "or" 'relativize-filename-at-point
+  "ox" 'nielius-xargs-on-region
   )
 
 (spacemacs/set-leader-keys-for-major-mode 'org-mode ; works only in org-mode, using SPC m or ,

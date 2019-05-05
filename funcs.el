@@ -411,6 +411,36 @@ One possible addition would be to use the prefix-key to enter the normal find-fi
     (find-file filename)))
 
 
+(defun nielius-xdg-open-this-line ()
+  (interactive)
+  (let ((filename (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
+    (message (format "Trying to open %s." filename))
+    (start-process "nielius-xdg-open-this-line" nil "xdg-open" filename)
+    ))
+
+(defun nielius-xargs-xdg-open-smart (beg end)
+  (interactive (list (region-beginning) (region-end)))
+  (if (use-region-p) ; i.e., if no region selected
+    (nielius-xargs-on-region "xdg-open {}" beg end)
+    (nielius-xdg-open-this-line)))
+
+(defun nielius-xargs-on-region (cmd beg end)
+  (interactive  "sCommand: \nr"  )
+  (shell-command-on-region beg end (format "xargs -I{} -d '\n' %s" cmd)))
+
+(defun nielius-sh-execute-region-or-line (replace beg end)
+  "Pipe the region (if using or region) or the current line to
+bash. With a prefix argument, replace line/region with output;
+otherwise, display output in a temporary buffer."
+  (interactive (list current-prefix-arg (region-beginning) (region-end) ))
+  (let ((reg
+         (if (use-region-p)
+             (cons beg end)
+           (cons (line-beginning-position) (line-end-position)))))
+    ;; in theory, you could insert in current buffer, but not replace the selection/line
+    (shell-command-on-region (car reg) (cdr reg) "bash" replace replace)))
+
+
 ;; 
 ;; Helm insert markdown links
 
