@@ -502,3 +502,42 @@ them as markdown links."
   (save-excursion
     (evil-goto-mark char)
     (yank)))
+
+(defun last-key ()
+  "Return the last key pressed."
+  (car (reverse (append (recent-keys) nil))))
+
+(defun nielius-layer--move-line-to-last-pressed-key ()
+  "Kill the current line and paste it at the mark of the key that is last pressed.
+
+This is not intended to be used as a standalone function, but
+works with the my-mouse-organisation-state transient state."
+  (interactive)
+  (progn
+    (kill-region
+     (- (line-beginning-position) 1)
+     (line-end-position))
+    (evil-my-paste-at-mark (last-key))
+    ;; These next two lines are supposed to make the behaviour similar to evil's 'dd'.
+    (evil-next-line)
+    (evil-first-non-blank)))
+
+(defun nielius-layer--generate-all-keybindings-for-my-mouse-organisation-state ()
+  "A helper function that generates all necessary keybindings for
+the transient state called my-mouse-organisation-state."
+  (mapcar
+   (lambda (i)
+     (let
+         ((binding (char-to-string (+ ?a i))))
+       (list binding 'nielius-layer--move-line-to-last-pressed-key (format "Move to %s" binding))))
+   (number-sequence 0 25)))
+
+(eval
+ `(spacemacs|define-transient-state my-mouse-organisation-state
+   :title "Mouse based organisation"
+   :doc "Move lines to marks by using the mouse and pressing the character for the mark."
+   :foreign-keys run
+   :bindings
+   ,@(nielius-layer--generate-all-keybindings-for-my-mouse-organisation-state)
+   ("q" nil "Exit"
+    :exit t)))
