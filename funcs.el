@@ -424,9 +424,12 @@ One possible addition would be to use the prefix-key to enter the normal find-fi
     (nielius-xargs-on-region "xdg-open {}" beg end)
     (nielius-xdg-open-this-line)))
 
-(defun nielius-xargs-on-region (cmd beg end)
-  (interactive  "sCommand: \nr"  )
-  (shell-command-on-region beg end (format "xargs -I{} -d '\n' %s" cmd)))
+(defun nielius-xargs-on-region (replace cmd beg end)
+  "Do xargs on the region. Use newline as the delimiter (i.e.,
+`xargs -d '\n'`) and specify the input with `{}'."
+  (interactive  "P\nsCommand: \nr")
+  (print replace)
+  (shell-command-on-region beg end (format "xargs -I{} -d '\n' %s" cmd) replace replace))
 
 (defun nielius-sh-execute-region-or-line (replace beg end)
   "Pipe the region (if using or region) or the current line to
