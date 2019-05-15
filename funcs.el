@@ -420,8 +420,8 @@ One possible addition would be to use the prefix-key to enter the normal find-fi
 
 (defun nielius-xargs-xdg-open-smart (beg end)
   (interactive (list (region-beginning) (region-end)))
-  (if (use-region-p) ; i.e., if no region selected
-    (nielius-xargs-on-region "xdg-open {}" beg end)
+  (if (use-region-p) ; i.e., if a region is selected
+    (nielius-xargs-on-region nil "xdg-open {}" beg end)
     (nielius-xdg-open-this-line)))
 
 (defun nielius-xargs-on-region (replace cmd beg end)
@@ -516,14 +516,35 @@ them as markdown links."
 This is not intended to be used as a standalone function, but
 works with the my-mouse-organisation-state transient state."
   (interactive)
-  (progn
-    (kill-region
-     (- (line-beginning-position) 1)
-     (line-end-position))
-    (evil-my-paste-at-mark (last-key))
-    ;; These next two lines are supposed to make the behaviour similar to evil's 'dd'.
-    (evil-next-line)
-    (evil-first-non-blank)))
+  (let ((last-key-pressed (last-key)))
+    (when (or
+           ;; if marker exists, everything fine
+           (evil-get-marker last-key-pressed)
+           ;; else, ask user if he wants to make a new marker and continue
+           (let
+               ((label (read-string "Marked doesn't exist. Label for new marker (empty for abort): ")))
+             (if (not (string= label ""))
+                 ;; then insert label at start of file and set the marker there
+                 (progn
+                   ;; make the label at the start of the document and return marker-char-maybe
+                   (save-excursion
+                     (goto-char (point-min))
+                     (insert (format "%s\n\n" label))
+                     (evil-set-marker last-key-pressed))
+                   t)
+               ;; otherwise, abort
+               nil)))
+      ;; actual work:
+      (progn
+        (kill-region
+         (- (line-beginning-position) 1)
+         (line-end-position))
+        (evil-my-paste-at-mark last-key-pressed)
+        ;; These next two lines are supposed to make the behaviour similar to evil's 'dd'.
+        (evil-next-line)
+        (evil-first-non-blank)))))
+
+
 
 (defun nielius-layer--generate-all-keybindings-for-my-mouse-organisation-state ()
   "A helper function that generates all necessary keybindings for
@@ -544,3 +565,22 @@ the transient state called my-mouse-organisation-state."
    ,@(nielius-layer--generate-all-keybindings-for-my-mouse-organisation-state)
    ("q" nil "Exit"
     :exit t)))
+
+
+;; Functions for quick copy
+;;
+;; Uses my shell-script mergecopy
+
+(setq nielius-mergecopy-process nil)
+
+(defun nielius-mergecopy ()
+  (interactive)
+  (let ((shell-script-to-run
+         "while xclip -o -sel c && echo -e \"\\nNEWCOPYSTARTSHERE\"; do xclip -i -quiet -sel c <> /dev/null >&0 2>&0; done "))
+    (message "Running: %s" shell-script-to-run)
+    (setq nielius-merge-copy-process
+          (start-process "mergecopy" "*mergecopy*" "sh" "-c" shell-script-to-run))))
+
+(defun nielius-mergecopy-stop ()
+  (interactive)
+  (delete-process nielius-merge-copy-process))
