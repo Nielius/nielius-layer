@@ -529,8 +529,9 @@ works with the my-mouse-organisation-state transient state."
                    ;; make the label at the start of the document and return marker-char-maybe
                    (save-excursion
                      (goto-char (point-min))
-                     (insert (format "%s\n\n" label))
-                     (evil-set-marker last-key-pressed))
+                     (insert (format "%s\n" label))
+                     (evil-set-marker last-key-pressed)
+                     (insert "\n\n"))
                    t)
                ;; otherwise, abort
                nil)))
