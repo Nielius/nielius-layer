@@ -40,7 +40,7 @@
   "oo" 'nielius-xargs-xdg-open-smart
   "oy" 'buffer-file-name-to-kill-ring
   ;; Relativize the filename at point is useful in combination with buffer-file-name-to-kill-ring.
-  "or" 'relativize-filename-at-point
+  "or" (lambda () (interactive (find-file "~/doc/notes/agenda/.latest_docs.md")))
   "ox" 'nielius-xargs-on-region
   )
 
