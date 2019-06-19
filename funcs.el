@@ -212,25 +212,6 @@ markdown link to that file."
 
 
 
-(defun niels-go-home-and-open ()
-  "Open the \"home screen\", start a search and open the link
-  that is at point after the search."
-  (interactive)
-  (let
-      ((startwin (selected-window))
-       (org-link-frame-setup '((file . find-file))) ; het is idioot dat het zo
-                                        ; moet, maar dit zorgt er
-                                        ; hopelijk voor dat de link
-                                        ; in een ander frame wordt
-                                        ; geopend
-       )
-    (with-selected-window startwin
-      (find-file "~/doc/org/home.org")
-      ;; (spacemacs/toggle-centered-buffer-mode) ; dit gaf problemen
-      (goto-char 0)
-      (isearch-forward) ; ik zou natuurlijk ook b.v. helm-swoop kunnen gebruiken
-      (org-open-at-point))))
-
 
 ;; 
 ;; Keyboard macro om links die ik via chrome heb gekregen mooi te maken.

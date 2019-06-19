@@ -31,7 +31,6 @@
   "op" (lambda () (interactive) (helm-find-1 "~/.spacemacs.d/private/")) ; configure private layers
   "ob" (lambda () (interactive) (helm-find-1 "~/md/"))
   "oB" (lambda () (interactive) (helm-find-1 "~/library/"))
-  "oh" 'niels-go-home-and-open
   "oe" 'nielius-sh-execute-region-or-line ; send current line or region to inferior shell; 'e' for execute; compare to the global "SPC e e" for evaluation sexps anywhere; see also nielius-xargs-on-region
   "oH" (lambda () (interactive) (find-file "~/doc/org/home.org"))
   "ol" (lambda () (interactive) (ace-link)
