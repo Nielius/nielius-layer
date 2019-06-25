@@ -31,6 +31,7 @@
 
 (defconst nielius-layer-packages
   '(org-id ; dit is zodat org-links automatisch via id's gaan
+    (baloo-helm :location local) ; for searching all files with baloo (KDE) and helm
     )
   "The list of Lisp packages required by the nielius-layer layer.
 
@@ -59,5 +60,9 @@ Each entry is either:
       - A list beginning with the symbol `recipe' is a melpa
         recipe.  See: https://github.com/milkypostman/melpa#recipe-format")
 
+
+
+(defun nielius-layer/init-baloo-helm ()
+  (use-package baloo-helm))
 
 ;;; packages.el ends here

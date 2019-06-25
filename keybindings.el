@@ -27,7 +27,7 @@
   "os" 'create-link-to-desktop
   "od" 'nielius-grep-org-files
   "of" (lambda () (interactive) (helm-find-1 "~/doc/"))
-  "oF" 'nielius-helm-insert-markdown-links-from-doc
+  "oF" 'baloo-helm-search
   "op" (lambda () (interactive) (helm-find-1 "~/.spacemacs.d/private/")) ; configure private layers
   "ob" (lambda () (interactive) (helm-find-1 "~/md/"))
   "oB" (lambda () (interactive) (helm-find-1 "~/library/"))
