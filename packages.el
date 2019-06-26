@@ -30,7 +30,8 @@
 ;;; Code:
 
 (defconst nielius-layer-packages
-  '(org-id ; dit is zodat org-links automatisch via id's gaan
+  '(
+    ;; org-id ; automatically make links with id's; package doesn't exist anymore?
     (baloo-helm :location local) ; for searching all files with baloo (KDE) and helm
     )
   "The list of Lisp packages required by the nielius-layer layer.
@@ -64,5 +65,9 @@ Each entry is either:
 
 (defun nielius-layer/init-baloo-helm ()
   (use-package baloo-helm))
+
+;; Package doens't exist anymore?
+;; (defun nielius-layer/init-org-id ()
+;;   (use-package org-id))
 
 ;;; packages.el ends here
