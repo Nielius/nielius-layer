@@ -1,8 +1,12 @@
 ;;
 ;; Some of the code is inspired by helm-ag.el
 
+(require 'helm)
+(require 'helm-files)
+
 ;; When editing, this is useful:
-(makunbound 'baloo-helm--helm-source)
+;;(makunbound 'baloo-helm--helm-source)
+
 (defvar baloo-helm--helm-source
   (helm-build-async-source "Baloo Desktop Search"
     :candidates-process 'baloo-helm--helm-candidate-process
@@ -19,9 +23,12 @@
   (start-process "baloo-helm-baloosearch" nil "baloosearch" helm-input))
 
 ;; This is the main user function in this file
+;;;###autoload
 (defun baloo-helm-search ()
   "Search your desktop with baloo and helm."
   (interactive)
   (helm
    :sources '(baloo-helm--helm-source)
    :buffer "*baloo-helm*"))
+
+(provide 'baloo-helm)
