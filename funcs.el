@@ -1,18 +1,6 @@
-;; * Search functions
-;; ---
-;; zoek in org-bestanden
-;; eventuele verbetering: zoek alleen in bepaalde directories (niet heel ~/)
+;; 
+;;; Utility functions for elisp code
 
-;; Wat wil ik?
-;; - zoek bestandsnamen
-;;   - alle bestandsnamen
-;;   - alleen org
-;; - zoek in bestanden (eigenlijk aan org-bestanden)
-;;   - met helm
-;;   - niet interactief
-
-
-;;; Utility functions
 (defun insert-string-at-point (str pt)
   "Insert the string STR at the point PT. PT is an integer that
 specifies the position; it is fed to `goto-char'."
@@ -27,7 +15,8 @@ specifies the position; it is fed to `goto-char'."
   (insert-string-at-point str beg))
 
 
-;;; General purpose functions
+;; 
+;;; General purpose emacs functions
 (defun m/scrolldown ()
   (interactive)
   (scroll-up 1))
@@ -44,25 +33,39 @@ determined by `sp-get-enclosing-sexp`."
     (eval-region beg end)))
 
 (defun buffer-file-name-to-kill-ring ()
-  "Save the name of the current buffer to the kill ring."
+  "Save the name of the current buffer to the kill ring.
+Better to use `spacemacs/copy-file-path'."
   (interactive)
   (kill-new buffer-file-name))
 
-;; relies on my small library
 (defun relativize-filename (beg end)
-  "Relativize the filename that is selected."
+  "Relativize the filename that is selected.
+Useful to replace absolute links in markdown files or org files
+by relative links."
   (interactive "r")
   (let ((filename (buffer-substring-no-properties beg end)))
     (replace-region-in-buffer beg end
                               (file-relative-name filename (file-name-directory
                                                                     (buffer-file-name))))))
 
+(defun relativize-filename-at-point ()
+  "Relativize the filename at the point (obtained via `thing-at-point').
+Useful to replace absolute links in markdown files or org files
+by relative links."
+  (interactive)
+  (let ((bounds (bounds-of-thing-at-point 'filename)))
+    (relativize-filename (car bounds) (cdr bounds))))
+
+;; TODO: move this to md-agenda
 (defun markdown-paste-as-relative-link (&optional filename)
   "Pastes the filename in the kill ring as a relative link.
-Useful in combination with `buffer-file-name-to-kill-ring'.
+Useful in combination with `spacemacs/copy-fily-path', which
+copies the path to the file that is being visited in the current
+buffer. This makes it easier to use simple markdown files as a
+kind of personal wiki.
 
-If the optional argument FILENAME is given, then make a link to that file,
-instead of to the filename in the kill ring."
+If the optional argument FILENAME is given, then make a link to
+that file, instead of to the filename in the kill ring."
   (interactive)
   (let
       ((filename
@@ -81,82 +84,7 @@ instead of to the filename in the kill ring."
                            (file-name-directory (buffer-file-name))))
       ")"))))
 
-(defun relativize-filename-at-point ()
-  "Relativize the filename at the point, using `thing-at-point' to get the filename at the point."
-  (interactive)
-  (let ((bounds (bounds-of-thing-at-point 'filename)))
-    (relativize-filename (car bounds) (cdr bounds))))
 
-
-(defun nielius--get-org-files ()
-  "Return a list of all org files on the system."
-  ;; misschien zou dit eigenlijk opgeslagen moeten worden? ipv steeds opnieuw
-  ;; berekend? dat heeft een speciale naam
-  (append
-   (directory-files-recursively "~/doc/studie/" ".*\\.org$")
-   (directory-files-recursively "~/doc/org/" "^log.*\\.org$")
-   (directory-files-recursively "~/doc/org/" "^dagplanning.*\\.org$")))
-
-(defun nielius-search-org-files (search-string)
-  (interactive "sSearch for: ")
-  (find-grep
-   (format "find ~/doc -name \"*.org\" -type f -exec grep -inH -e \"%s\" {} + ")
-   ;; This was the old search format I used, when all my files were still in ~/Dropbox/... :
-   ;; (format "find ~/ -not \\( -path ~/Dropbox/.dropbox.cache -prune \\) -not \\( -path ~/Dropbox/config/okular-docdata/ -prune \\) -name \"*.org\" -type f -exec grep -inH -e \"%s\"  {} +"
-   ;;                   search-string)
-
-             ))
-;; voor info over find-command:
-;; http://stackoverflow.com/a/16595367
-(defun nielius-search-studie-files (search-string)
-  (interactive "sSearch for: ")
-  (find-grep (format "find ~/doc/studie -name \"*.org\" -type f -exec grep -inH -e \"%s\"  {} +"
-                     search-string)))
-
-(defun nielius-grep-studie-files (arg)
-  "Zoek in studiebestanden.
-Zonder prefix: gebruik helm-do-grep.
-Met prefix: gebruik find-grep."
-  (interactive "P")
-  (if arg
-      (call-interactively #'nielius-search-studie-files)
-    (helm-do-grep-1
-     (nielius--get-org-files))))
-
-(defun nielius-grep-org-files (arg)
-  "Zoek in org-bestanden.
-Zonder prefix: gebruik helm-do-grep.
-Met prefix: gebruik find-grep."
-  (interactive "P")
-  (if arg
-      (call-interactively #'nielius-search-org-files)
-    (helm-do-grep-1 '("~/doc") t nil '("*.md"))))
-
-(defun nielius-open-org-files ()
-  "Use helm to open one of the org files on the system. FIXME"
-  ;; misschien moet ik gewoon helm sources bouwen?
-  (interactive)
-  (helm :sources 'helm-source-findutils
-        :buffer "*helm find*"
-        :ff-transformer-show-only-basename nil
-        :case-fold-search helm-file-name-case-fold-search)
-  )
-
-
-
-(defun nielius-insert-doc-file-as-markdown-link ()
-  "Use helm to search for a doc file and insert a relative
-markdown link to that file."
-  (interactive)
-  (let
-      ((helm-type-file-actions (helm-make-actions "Insert file as link"  'my-helm-insert-as-markdown-link)))
-    (helm-find-1 "~/doc")))
-
-
-
-
-;; * misc custom commands
-;; ---
 (defun my-ediff-backup ()
   "Apply ediff-files to the current file and its #-surrounded backup (e.g. file.txt and #file.txt#)."
   (interactive)
@@ -176,54 +104,47 @@ markdown link to that file."
     (delete-file backup-file-name)))
 
 
-(setq org-latex-my-export-dir "/home/niels/tmp/tmpdir/")
-(defun org-latex-export-to-pdf-cd (display-in-okular &rest r)
-  (interactive "p")
-  (let ((orig-dir default-directory))
-    ;;   (message "Default directory before cd is %s" orig-dir)
-    (if (file-accessible-directory-p  org-latex-my-export-dir)
-     (cd org-latex-my-export-dir)
-     (user-error (format  "Directory %s does not exist!" org-latex-my-export-dir)))
-    ;;    (message "Original directory after cd is %s" orig-dir)
-    (apply #'org-latex-export-to-pdf r)
-    (if display-in-okular
-        (start-process "org-latex-export-okular-process" nil "okular"
-                       (concat ;; lijkt niet nodig directory te doen... gek...
-                        ;; was ook al zo als ik eerst cd orig-dir deed
-                        (file-name-base buffer-file-name)
-                        ".pdf")))
-    (cd orig-dir)
-    ))
+(defun open-this-file-in-browser (&optional new-window-q)
+  "Open the current file in firefox.
+With prefix argument, open new window."
+  (interactive)
+  (browse-url-firefox (buffer-file-name) new-window-q))
 
 
-;; doet dit hetzelfde als org-latex-convert-region-to-latex?
-;; als ik zoiets wil opzetten, zie ook org-export-as in ox.el (dit export iig een string);
-;; het lijkt erop dat het alleen goed te doen is door zelf een buffer te creeëren
-;; (defun org-latex-export-inline (arg)
-;;   "Replace the current org region with its latex export.
-;; With prefix: do not replace current region, only yank new export.
-;; Seems to do the same thing as org-latex-convert-region-to-latex..."
-;;   (interactive "P")
-;;   (let ((org-export-show-temporary-export-buffer nil))
-;;     (org-latex-export-as-latex nil nil nil t))
-;;   (if (not arg)
-;;       (delete-region (region-beginning) (region-end)))
-;;   (insert-buffer-substring-as-yank "*Org LATEX Export*"))
-
-
+(defun create-link-to-desktop (&optional file-to-link-to)
+  "Create a linux symbolic link to the currently visited file in the directory
+`~/Desktop/maanden/<currentmonth>/'."
+  (interactive)
+  (let*
+      ((src (if file-to-link-to
+                file-to-link-to
+              (buffer-file-name)))
+       (month (format-time-string "%Y-%m"))
+       (tgtdir (concat "~/Desktop/maanden/" month "/"))
+       (tgt (concat tgtdir (file-name-nondirectory src))))
+    ;; make the target dir (tgtdir) if it doesn't exist yet
+    (unless (file-exists-p tgtdir)
+      (make-directory tgtdir))
+    (if (not (file-exists-p tgt))
+        (progn
+          (make-symbolic-link src tgt)
+          (message (format "Link to %s made at %s" src tgt)))
+      (message (format "A link to %s already exists" tgt)))))
 
 
 ;; 
-;; Keyboard macro om links die ik via chrome heb gekregen mooi te maken.
-;; kun je uitvoeren met M-x of met call macro
-;; ook misschien handig: apply-macro-to-region-lines to a key
-;; ook grappig: You can create a macro out of your last 100 keystrokes. Type C-x C-k l.
-;; repeat met: C-x z (z z z z z z )
+;; Functions to prettify links from chrome
 
 
 (defun prettify-chrome-links ()
+  "This function turns something of the form
+
+   Description of a link
+   http://some-link.com/wherever
+
+into an org-mode-link. Execute it with the cursor on the
+description of the link."
   (interactive)
-                                        ; "slecht" geschreven: doe eerst dat, doe dan dit
   ;; delete-region
   ;; delete-and-extract-region
   ;; point-at-bol
@@ -242,7 +163,9 @@ markdown link to that file."
   (join-line 1))
 
 (defun listify-chrome-links (beg end)
-  "Turn the selected region of links into a nice list of org-mode links."
+  "Turn the selected region of links (of the form
+`<description>\n<link>\n', with different links separated by
+blank lines)into a nice list of org-mode links."
   (interactive (list (region-beginning) (region-end)))
   (if (= beg end)
       ;; if no region specified, just insert what is in the kill ring
@@ -284,108 +207,15 @@ Dan, but adapted by me (NudB)."
       (indent-according-to-mode)
       (forward-line 1))))
 
-;; 
-(defun open-the-exported-html ()
-  "Open the HTML export of the current org-mode file in a
-browser. Assumes a very specific organisation: the org-mode files
-are supposed to be in /home/niels/doc and this entire directory is supposed
-to be exported to /home/niels/proj/org-publish/"
-  (interactive)
-  (let*
-      ((org-dir "/home/niels/doc/")
-       (export-dir "/home/niels/proj/org-publish/"))
-    (if (and ;; just checking if the file is an org-file in our doc-directory
-         (string= (file-name-extension buffer-file-name) "org")
-         (string-prefix-p org-dir (file-name-directory buffer-file-name)))
-        (let*
-            ;; directory-name-in-org-dir is going to be the subdirectory in org-dir, e.g.,
-            ;; for the file '~/doc/comp/alexa.org' it is going to be 'comp/'
-            ((directory-name-in-org-dir (file-relative-name (file-name-directory buffer-file-name) org-dir))
-             (html-file-name-nondirectory (concat (file-name-base (buffer-file-name)) ".html"))
-             (html-file-name (concat export-dir directory-name-in-org-dir html-file-name-nondirectory)))
-          (browse-url-default-browser (concat "file://" (expand-file-name html-file-name))))
-      ;; If the file is not in the right directory...
-      (message "This file is not an org file in the standard org directory!"))))
-
-;; See this link:
-;; https://www.gnu.org/software/emacs/manual/html_node/elisp/File-Name-Components.html
-;; for a lot of useful file name operations.
-
-
-(defun open-this-file-in-browser (&optional new-window-q)
-  "Open the current file in firefox.
-With prefix argument, open new window."
-  (interactive)
-  (browse-url-firefox (buffer-file-name) new-window-q)) ; the t is to open in new window
-
-
 
 ;; 
-;; * Start-up screen
-;; ** New frame met organiser
-(defun niels-open-organiser ()
-  "Open een nieuw frame met allemaal organiser-informatie"
-  (interactive)
-  (let*
-      ((organiser-frame (make-frame '((name . "organiser"))))
-       (w1 (car (window-list organiser-frame)))
-       (w2 (split-window w1 4 'below))
-       (w3 (split-window w2 nil 'right))
-       (w4 (split-window w3 (* 4 (/ (window-total-height w3) 5)) 'below))
-       (org-link-frame-setup '((file . find-file)))
-       (weeknr (string-to-int (shell-command-to-string "echo -n $(date +%V)")))
-       (week-string (shell-command-to-string "echo -n W$(date +%V)")))
-    (with-selected-window w1
-      (org-open-file "~/Dropbox/org/lessen.org" nil nil "Projectenoverzicht")
-      ()
-      (forward-line (+ 10 weeknr))
-      (recenter 3))
-					; aka kalendar
-    (with-selected-window w3
-      (org-open-file "~/Dropbox/org/lessen.org" nil nil "Begonnen")
-					; begonnen habits
-      (recenter 0))
-    (with-selected-window w2
-      (org-open-file "~/Dropbox/org/dagplanning.org" nil nil week-string)
-      (org-goto-local-search-headings
-       (shell-command-to-string "LC_TIME='nl_NL.UTF-8' date '+%a'")  nil nil)
-      (recenter 0))
-    (with-selected-window w4
-      (org-open-file "~/Dropbox/org/log.org" nil nil week-string)
-      (recenter 0))))
-
-(defun niels-startup-screen ()
-  (let ((week-string (shell-command-to-string "echo -n W$(date +%V)")))
-    (org-open-file "~/Dropbox/org/dagplanning.org" nil nil week-string)
-    (delete-other-windows)))
-
-(defun create-link-to-desktop (&optional file-to-link-to)
-  (interactive)
-  (let*
-      ((src (if file-to-link-to
-                file-to-link-to
-              (buffer-file-name)))
-       (month (format-time-string "%Y-%m"))
-       (tgtdir (concat "~/Desktop/maanden/" month "/"))
-       (tgt (concat tgtdir (file-name-nondirectory src))))
-    ;; make the target dir (tgtdir) if it doesn't exist yet
-    (unless (file-exists-p tgtdir)
-      (make-directory tgtdir))
-    (if (not (file-exists-p tgt))
-        (progn
-          (make-symbolic-link src tgt)
-          (message (format "Link to %s made at %s" src tgt)))
-      (message (format "A link to %s already exists" tgt)))))
-
-;; 
-;; Function to quickly open file at point
+;; Smart open/execute functions
 
 ;; It requires ffap.el.
 (autoload 'ffap-file-at-point "ffap.el")
 (defun nielius-ffap ()
-  "My own \"find file at point\". Does not prompt to ask if the file was correct.
-
-One possible addition would be to use the prefix-key to enter the normal find-file-at-point."
+  "My own \"find file at point\". Does not prompt to ask if the file was
+  correct, so it is quicker."
   (interactive)
   (let
       ((filename (ffap-file-at-point)))
@@ -393,6 +223,9 @@ One possible addition would be to use the prefix-key to enter the normal find-fi
 
 
 (defun nielius-xdg-open-this-line ()
+  "Open the file on the current line with `xdg-open' (i.e., open
+it with a default application determined by the (Linux) desktop
+system)."
   (interactive)
   (let ((filename (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
     (message (format "Trying to open %s." filename))
@@ -400,6 +233,9 @@ One possible addition would be to use the prefix-key to enter the normal find-fi
     ))
 
 (defun nielius-xargs-xdg-open-smart (beg end)
+  "If a region is selected, apply xargs to the region.
+If no region is selected, open the file with `xdg-open'
+(through the function `nielius-xdg-open-this-line')."
   (interactive (list (region-beginning) (region-end)))
   (if (use-region-p) ; i.e., if a region is selected
     (nielius-xargs-on-region nil "xdg-open {}" beg end)
@@ -413,9 +249,10 @@ One possible addition would be to use the prefix-key to enter the normal find-fi
   (shell-command-on-region beg end (format "xargs -I{} -d '\n' %s" cmd) replace replace))
 
 (defun nielius-sh-execute-region-or-line (replace beg end)
-  "Pipe the region (if using or region) or the current line to
-bash. With a prefix argument, replace line/region with output;
-otherwise, display output in a temporary buffer."
+  "Pipe the region (if using or region) or the current line (if
+not using region) to bash. With a prefix argument, replace
+line/region with output; otherwise, display output in a temporary
+buffer."
   (interactive (list current-prefix-arg (region-beginning) (region-end) ))
   (let ((reg
          (if (use-region-p)
@@ -469,16 +306,8 @@ them as markdown links."
       (helm-find-1 "~/doc"))))
 
 
-;; Add the action to helm's list, so that I can use it with any helm find file.
-;; TODO: fix this; this be evaluated after helm is loaded, for example;
-;; otherwise my entire config is not loaded
-;; (setf
-;;  (alist-get "Insert as markdown link" helm-type-file-actions)
-;;  'nielius-helm--insert-markdown-links-action)
-
-
-
 ;; 
+;;; Functions for mouse organisation state
 
 (defun evil-my-paste-at-mark (char)
   "Paste from the kill ring at the given mark."
@@ -526,8 +355,6 @@ works with the my-mouse-organisation-state transient state."
         (evil-next-line)
         (evil-first-non-blank)))))
 
-
-
 (defun nielius-layer--generate-all-keybindings-for-my-mouse-organisation-state ()
   "A helper function that generates all necessary keybindings for
 the transient state called my-mouse-organisation-state."
@@ -549,6 +376,7 @@ the transient state called my-mouse-organisation-state."
     :exit t)))
 
 
+;; 
 ;; Functions for quick copy
 ;;
 ;; Uses my shell-script mergecopy
