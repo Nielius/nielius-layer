@@ -21,6 +21,19 @@
   )
 
 
+;; Keybindings for eyebrowse-switch-to-window-config-n with n an integer
+;;
+;; For every 1 \leq n \leq 9, map SPC n to switch to eyebrowse window configuration n
+(mapc
+ (lambda (n)
+   (spacemacs/set-leader-keys
+     (number-to-string n)
+     (symbol-function
+      (intern-soft
+       (concat "eyebrowse-switch-to-window-config-" (number-to-string n))))))
+ (number-sequence 1 9))
+
+
 ;; Keybindings for finding files
 (spacemacs/set-leader-keys
   ; "os" 'nielius-grep-studie-files ;; gebruikte ik niet echt
