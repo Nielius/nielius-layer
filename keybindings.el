@@ -67,7 +67,6 @@
 
 ;; Keybindings for markdown mode
 (spacemacs/set-leader-keys-for-major-mode 'markdown-mode "v" 'open-this-file-in-browser)
-(spacemacs/set-leader-keys-for-major-mode 'markdown-mode "p" 'markdown-paste-as-relative-link)
 
 
 ;; Global keybindings

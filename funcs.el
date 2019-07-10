@@ -56,33 +56,7 @@ by relative links."
   (let ((bounds (bounds-of-thing-at-point 'filename)))
     (relativize-filename (car bounds) (cdr bounds))))
 
-;; TODO: move this to md-agenda
-(defun markdown-paste-as-relative-link (&optional filename)
-  "Pastes the filename in the kill ring as a relative link.
-Useful in combination with `spacemacs/copy-fily-path', which
-copies the path to the file that is being visited in the current
-buffer. This makes it easier to use simple markdown files as a
-kind of personal wiki.
 
-If the optional argument FILENAME is given, then make a link to
-that file, instead of to the filename in the kill ring."
-  (interactive)
-  (let
-      ((filename
-        (if filename ; if the optional argument is given,
-            filename ; use that
-          (substring-no-properties ; otherwise, kill ring
-           (car kill-ring)))))
-    (unless (eolp) (forward-char)) ; necessary to get evil's normal paste-after effect
-    (insert-for-yank
-     (concat
-      "["
-      (file-name-base filename)
-      "]("
-      (s-trim
-       (file-relative-name filename
-                           (file-name-directory (buffer-file-name))))
-      ")"))))
 
 
 (defun my-ediff-backup ()
@@ -130,6 +104,33 @@ With prefix argument, open new window."
           (make-symbolic-link src tgt)
           (message (format "Link to %s made at %s" src tgt)))
       (message (format "A link to %s already exists" tgt)))))
+
+(defun evil-my-paste-at-mark (char)
+  "Paste from the kill ring at the given mark."
+  (interactive (list (read-char)))
+  (save-window-excursion
+    (save-mark-and-excursion
+      (evil-goto-mark char)
+      (yank))))
+
+
+(defun append-this-file-to-other-and-delete (filename)
+  "Insert the current file at the end of another (markdown) file,
+with the filename as a header. Then delete the currently visited
+file. "
+  (interactive "f")
+  (let*
+      ((this-buffer (current-buffer))
+       (this-filename (buffer-file-name this-buffer)))
+    (progn
+      (find-file filename)
+      (goto-char (point-max))
+      (insert (format "\n\n\# From %s \n\n" (file-name-base this-filename)))
+      (forward-line 4)
+      (insert-file-contents this-filename)
+      (delete-file this-filename t)
+      (kill-buffer this-buffer))))
+
 
 
 ;; 
@@ -309,16 +310,10 @@ them as markdown links."
 ;; 
 ;;; Functions for mouse organisation state
 
-(defun evil-my-paste-at-mark (char)
-  "Paste from the kill ring at the given mark."
-  (interactive (list (read-char)))
-  (save-excursion
-    (evil-goto-mark char)
-    (yank)))
 
 (defun last-key ()
   "Return the last key pressed."
-  (car (reverse (append (recent-keys) nil))))
+  (car (last (append (recent-keys) nil))))
 
 (defun nielius-layer--move-line-to-last-pressed-key ()
   "Kill the current line and paste it at the mark of the key that is last pressed.
