@@ -234,9 +234,9 @@ system)."
     ))
 
 (defun nielius-xargs-xdg-open-smart (beg end)
-  "If a region is selected, apply xargs to the region.
-If no region is selected, open the file with `xdg-open'
-(through the function `nielius-xdg-open-this-line')."
+  "If no region is selected, open the file on the current line with `xdg-open'
+(through the function `nielius-xdg-open-this-line'). If a region
+is selected, do the same on every line in the region."
   (interactive (list (region-beginning) (region-end)))
   (if (use-region-p) ; i.e., if a region is selected
     (nielius-xargs-on-region nil "xdg-open {}" beg end)
