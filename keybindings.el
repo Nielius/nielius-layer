@@ -10,7 +10,7 @@
 ;; Override some general keybindings
 (define-key evil-normal-state-map (kbd "gf") 'nielius-ffap)
 (define-key evil-normal-state-map (kbd "<up>") 'm/scrollup)
-(define-key evil-normal-state-map (kbd "<up>") 'm/scrolldown)
+(define-key evil-normal-state-map (kbd "<down>") 'm/scrolldown)
 
 (define-key evil-normal-state-map (kbd "<mouse-2>") 'my-eval-curr-sexp)
 
