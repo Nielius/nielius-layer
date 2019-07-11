@@ -293,20 +293,6 @@ on all marked helm candidates (i.e., in the lambda, `candidate' is simply ignore
      (nielius-helm--insert-markdown-links-action ))))
 
 
-(defun nielius-helm-insert-markdown-links-from-doc ()
-  "Search for files in my document folder with helm and insert
-them as markdown links."
-  (interactive)
-  (let
-      ((helm-type-file-actions
-        '(("Make relative markdown link to file" . nielius-helm--insert-markdown-links-action)))
-       ;; (helm-find-map my-helm-find-map)
-       ;; (spacemacs/helm-find-files-windows 'nielius-helm--insert-markdown-links-action)
-       )
-    (cl-letf (((symbol-function 'spacemacs/helm-find-files-windows) #'nielius-helm--insert-markdown-links-windows))
-      (helm-find-1 "~/doc"))))
-
-
 ;; 
 ;;; Functions for mouse organisation state
 
