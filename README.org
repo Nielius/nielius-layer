@@ -1,29 +1,149 @@
-#+TITLE: nielius-layer layer
+#+TITLE: nielius-layer: A collection of useful Emacs (Spacemacs) functions
 #+HTML_HEAD_EXTRA: <link rel="stylesheet" type="text/css" href="../css/readtheorg.css" />
 
-#+CAPTION: logo
-
-# The maximum height of the logo should be 200 pixels.
-[[img/nielius-layer.png]]
 
 * Table of Contents                                        :TOC_4_org:noexport:
- - [[Description][Description]]
- - [[Install][Install]]
- - [[Key bindings][Key bindings]]
+- [[Description][Description]]
+  - [[Other useful functions][Other useful functions]]
+    - [[The strange, experimental ones][The strange, experimental ones]]
+    - [[The conventional, but very useful ones][The conventional, but very useful ones]]
+- [[Install][Install]]
+- [[Key bindings][Key bindings]]
 
 * Description
-This layer does wonderful things:
-  - thing01
+
+This is a collection of small functions for [[https://www.gnu.org/software/emacs/][Emacs]]
+that I wrote and that other people may find useful.
+I personally use and can recommend [[http://spacemacs.org/][Spacemacs]].
+
+The code is structured as a Spacemacs layer,
+but you can easily extract parts that you might like to use:
+the function definitions are in [[file:funcs.el][funcs.el]],
+some suggested keybindings (mostly for use with Spacemacs, though) are in [[file:keybindings.el][keybindings.el]]
+and the configuration file [[file:config.el][config.el]] integrates two of my functions with [[https://github.com/emacs-helm/helm][Helm]]
+(in such a way that the functions are available whenever you use Helm to search for files).
+
+For short descriptions of many of the smaller functions,
+*see the [[Key bindings][key bindings]]*.
+Some functions require a longer description;
+see below.
+
+
+** Other useful functions
+
+*** The strange, experimental ones
+
+~spacemacs/my-mouse-organisation-state-transient-state/body~
+--- This function is a bit of an experiment:
+it is intended to explore novel ways of using the mouse very effectively.
+In general, the fact that everything in Emacs can be done with the keyboard
+greatly improves the speed with which I can do things,
+but there are some situations where the mouse (or the mouse-keyboard combination)
+is undeniably better.
+For an example outside of text editing:
+imagine playing Starcraft (or any RTS game, for that matter) without a mouse.
+
+The situation that I have in mind here is actually not so different from the Starcraft example:
+suppose you have a text file with many different lines that you need to move around the file.
+Then in my experience, the main bottleneck is moving to specific locations within the file,
+which is not so different from selecting a location in an RTS game.
+
+This function is supposed to be used as follows.
+By executing it, you enter a Spacemacs transient state.
+Press ~q~ to quit it.
+If you press any other letter (from ~a~ to ~z~),
+then the current line is moved to the evil/vim mark at that letter.
+If such a mark does not exist,
+the user is asked if it wants to make one at the beginning of the buffer,
+possibly with a label to distinguish it from other marks.
+You can then very quickly click around and press keys on your keyboard to move lines around.
+
+There is probably still a lot to be gained from experimenting with such keyboard-mouse combinations
+and I don't think this particular function gets everything right yet,
+so I'd be interested in hearing people's thoughts on this.
+
+~nielius-mergecopy~ and ~nielius-mergecopy-stop~
+--- These functions only work on Linux and require the program ~xclip~.
+They allow you to very quickly copy and paste things into Emacs:
+when you run ~nielius-mergcopy~,
+everytime you copy anything on your system,
+it is automatically pasted into an Emacs buffer called ~*mergecopy*~.
+You stop by running ~nielius-mergecopy-stop~.
+
+This is very useful when you want to copy-paste many things from a website quickly,
+for example when browsing through documentation, or in coding challenges.
+
+
+*** The conventional, but very useful ones
+
+~append-this-file-to-other-and-delete~
+--- this function appends the current file to another file
+and then deletes the currently visited file.
+This is very useful in my workflow, where I often have temporary
+small notes in files that need to be incorporated into some other files.
+Similar to how you can refile with org-mode.
+The configuration file [[file:config.el][config.el]] integrates this function with [[https://github.com/emacs-helm/helm][Helm]] 
+(making it available as an action).
+
+
+~nielius-helm--insert-markdown-links-action~
+--- insert a markdown link to a file.
+The configuration file [[file:config.el][config.el]] integrates this function with [[https://github.com/emacs-helm/helm][Helm]] ,
+making it available as an action,
+so that you can, for example, search for a file with ~helm-projectile~
+and insert a markdown link using this action.
+
+~prettify-chrome-links~,
+~listify-chrome-links--helper~,
+~listify-at-newlines~, and
+~listify-chrome-links~
+--- these functions turn lists of links with descriptions into org-mode links.
+I don't use them anymore:
+they were useful when I used a Chrome extension that could export a list
+of all open tabs in this format,
+but now I instead use [[https://addons.mozilla.org/en-US/firefox/addon/export-tabs-urls-and-titles/][this Firefox add-on]] that allows you to define your own output format.
+
 
 * Install
-To use this contribution add it to your =~/.spacemacs=
 
-#+begin_src emacs-lisp
-  (setq-default dotspacemacs-configuration-layers '(nielius-layer))
-#+end_src
+To use this as a spacemacs layer, put the code in a folder called ~nielius-layer~
+in your private layer directory (the variable ~configuration-layer-private-layer-directory~
+tells you which directory this is) and add ~'nielius-layer~
+to ~dotspacemacs-configuration-layers~ in your ~.spacemacs~ file.
+(This layer is not (yet?) available as an "official" Spacemacs layer.)
 
 * Key bindings
 
-| Key Binding     | Description    |
-|-----------------+----------------|
-| ~<SPC> x x x~   | Does thing01   |
+These are the key bindings defined in [[file:keybindings.el][keybindings.el]].
+
+| Key Binding      | Description                                                          |
+|------------------+----------------------------------------------------------------------|
+| ~gf~             | Find file at point, without asking for confirmation (~nielius-ffap~) |
+| ~\~ <evil mark>~ | Paste (evil/vim-style) at the given mark, without moving the cursor. |
+| ~SPC <n>~        | <n> between 1 and 9: go to tab <n>, using eyebrowse                  |
+| ~SPC o s~        | Create a symlink to the currently visited file on the desktop.                                                                                                                                  |
+| ~SPC o y~        | Copy the file name of the file in the currently visited buffer. Better: ~SPC f y y~.                                                                                                            |
+
+Some key bindings for easily evaluating elisp code:
+
+| Key Binding | Description                                                                                                                                                                                     |
+|-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ~SPC e r~   | Eval the region of elisp code.                                                                                                                                                                  |
+| ~SPC e c~   | Eval the elisp code of the sexp you're currently in.                                                                                                                                            |
+| ~SPC e e~   | Eval the last sexp before the marker.                                                                                                                                                           |
+
+Some key bindings for executing Bash anywhere or opening files with ~xdg-open~.
+
+| Key Binding | Description                                                                                                                                                                                     |
+|-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ~SPC o e~   | If a region is selected, execute the region with ~bash~; otherwise, execute the current line with ~bash~.                                                                                       |
+| ~SPC o o~   | If no region is selected, open current line (which should be a filename) with ~xdg-open~ (i.e., with a Desktop application). If a region is selected, do the same for every line in the region. |
+| ~SPC o x~   | Apply ~xargs~ on the region, using newlines as the delimiter and the argument ~-I{}~.                                                                                                           |
+
+In markdown-mode, use ~<major leader> v~ to open the current file in the browser
+(and do *not* export to HTML; this is useful when using a browser extension
+(such as [[https://github.com/KeithLRobertson/markdown-viewer][this one]]) that allows you to conveniently view markdown files).
+
+Additionally, I changed some keybindings in ~reftex~, to make them more vim-like.
+This doesn't work perfectly yet, however, and when it does,
+it might be an idea to propose it for integration with the default Spacemacs configuration.
